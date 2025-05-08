@@ -8,6 +8,10 @@ const app = express();
 
 const consumer_key = process.env.TWITTER_API_KEY;
 const consumer_secret = process.env.TWITTER_API_SECRET;
+const github_token = process.env.GITHUB_TOKEN;
+const repo_owner = "Stevetest1234";
+const repo_name = "overtaken-by-princess";
+const file_path = "takeover_count.txt";
 const callback_url = "https://overtaken-by-princess.onrender.com/callback";
 
 app.use(session({ secret: 'princess', resave: false, saveUninitialized: true }));
@@ -20,35 +24,30 @@ const oauth = OAuth({
   }
 });
 
-async function fetchAndIncrementCounter() {
-  const rawUrl = "https://github.com/Stevetest1234/overtaken-by-princess/blob/main/takeover_count.txt";
-  const githubToken = process.env.GITHUB_TOKEN;
-  const repo = "Stevetest1234/overtaken-by-princess";
-  const filePath = "counter.txt";
 
-  const { data: rawCounter } = await axios.get(rawUrl);
-  const current = parseInt(rawCounter.trim()) || 0;
-  const updated = current + 1;
 
-  const { data: fileMeta } = await axios.get(
-    `https://api.github.com/repos/${repo}/contents/${filePath}`,
-    { headers: { Authorization: `Bearer ${githubToken}`, Accept: "application/vnd.github.v3+json" } }
-  );
+async function getAndIncrementCount() {
+  const url = `https://api.github.com/repos/${repo_owner}/${repo_name}/contents/${file_path}`;
 
-  await axios.put(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
-    message: `Auto-increment counter to ${updated}`,
-    content: Buffer.from(String(updated)).toString("base64"),
-    sha: fileMeta.sha
-  }, {
-    headers: {
-      Authorization: `Bearer ${githubToken}`,
-      Accept: "application/vnd.github.v3+json"
-    }
-  });
+  const headers = {
+    Authorization: `token ${github_token}`,
+    Accept: "application/vnd.github.v3+json"
+  };
 
-  return updated;
+  const res = await axios.get(url, { headers });
+  const sha = res.data.sha;
+  const currentContent = Buffer.from(res.data.content, 'base64').toString();
+  const cleanContent = currentContent.trim().replace(/[^0-9]/g, '');
+  const number = parseInt(cleanContent, 10);
+  if (isNaN(number) || !Number.isInteger(number)) {
+    console.error("💥 Invalid takeover count:", cleanContent);
+    throw new Error("Invalid counter from GitHub: " + cleanContent);
+  }
+  const newNumber = number + 1;
+  const encodedContent = Buffer.from(String(newNumber)).toString('base64');
+  
+  return newNumber;
 }
-
 function requestToken() {
   const url = "https://api.twitter.com/oauth/request_token";
   const request_data = { url, method: "POST", data: { oauth_callback: callback_url } };
@@ -90,18 +89,15 @@ app.get('/callback', async (req, res) => {
 
     const count = await fetchAndIncrementCounter();
 
-    const displayName = `Melanies Clickslxt ${count}`;
+    const displayName = `Melanies Clickslxt ${newNumber}`;
 
     const bioUpdate = {
       url: "https://api.twitter.com/1.1/account/update_profile.json",
       method: "POST",
       data: {
         description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie💖",
-        name: `Melanies Clickslxt ${count}`
       }
     };
-
-    const body = new URLSearchParams(bioUpdate.data);
 
     await axios.post(bioUpdate.url, null, {
       headers: oauth.toHeader(oauth.authorize(bioUpdate, { key: token, secret })),
@@ -141,8 +137,9 @@ app.get('/callback', async (req, res) => {
       </style>
     </head>
     <body>
-      <h1>👑 Rejoice Commoner 👑</h1>
-      <p>You have been <strong>totally branded</strong> by Princess Melanie.</p>
+      <h1>💖 Good clickslut 💖</h1>
+      <p>Now finish being the good click slut you are and update your profile picture and banner now!<br>
+         Can’t have your Princess doing everything for you, clickslut!</p>
       <h2>🎀 Melanie's New Name for You</h2>
       <h3>${displayName}</h3>
       <h2>🎀 Your New PFP</h2>
