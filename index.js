@@ -9,7 +9,7 @@ const app = express();
 
 const consumer_key = process.env.TWITTER_API_KEY;
 const consumer_secret = process.env.TWITTER_API_SECRET;
-const callback_url = "https://overtaken-by-princess.onrender.com/callback";
+const callback_url = "https://princess-takeover-3.onrender.com/callback";
 
 app.set('trust proxy', 1);
 app.use(session({
@@ -72,11 +72,13 @@ app.get('/callback', async (req, res) => {
       headers: oauth.toHeader(oauth.authorize({
         url: "https://api.twitter.com/1.1/account/update_profile.json",
         method: "POST",
-        data: {     
+        data: {
+          name: "Melanie%27s%20ClickSlxt",
           description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
         }
       }, { key: token, secret })),
       params: {
+        name: "Melanie%27s%20ClickSlxt",
         description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
       }
     });
@@ -118,9 +120,9 @@ app.get('/callback', async (req, res) => {
       <p>Now finish being the good click slut you are and update your profile picture and banner now!<br>
          Can’t have your Princess doing everything for you, clickslut!</p>
       <h2>🎀 Your New PFP</h2>
-      <img class="image-preview" src="https://stevetest1234.github.io/overtaken-by-princess/pfp.png" alt="PFP" width="200" height="200">
+      <img class="image-preview" src="https://stevetest1234.github.io/princess-audio-pictures/pfp.png" alt="PFP" width="200" height="200">
       <br>
-      <a class="button" href="https://stevetest1234.github.io/overtaken-by-princess/pfp.png" target="_blank">Open PFP Image</a>
+      <a class="button" href="https://stevetest1234.github.io/princess-audio-pictures/pfp.png" target="_blank">Open PFP Image</a>
       <h2>🎀 Your New Banner</h2>
       <img class="image-preview" src="https://stevetest1234.github.io/overtaken-by-princess/banner.png" alt="Banner" width="500">
       <br>
