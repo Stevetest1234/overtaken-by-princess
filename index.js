@@ -14,7 +14,7 @@ const consumer_secret = process.env.TWITTER_API_SECRET;
 const github_token = process.env.GITHUB_TOKEN;
 const repo_owner = "Stevetest1234";
 const repo_name = "overtaken-by-princess";
-const file_path = "counter/takeover_count.txt";
+const file_path = "takeover_count.txt";
 const callback_url = "https://overtaken-by-princess.onrender.com/callback";
 
 async function getAndIncrementCount() {
