@@ -61,20 +61,19 @@ app.get('/callback', async (req, res) => {
     const token = access.get("oauth_token");
     const secret = access.get("oauth_token_secret");
 
-    // Update bio
-    await axios.post("https://api.twitter.com/1.1/account/update_profile.json", null, {
-      headers: oauth.toHeader(oauth.authorize({
-        url: "https://api.twitter.com/1.1/account/update_profile.json",
-        method: "POST",
-        data: {
-          name: "Melanies Clickslxt",
-          description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
-        }
-      }, { key: token, secret })),
-      params: {
-        name: "Melanies Clickslxt",
-        description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
+    // Update bio (as example)
+    const bioUpdate = {
+      url: "https://api.twitter.com/1.1/account/update_profile.json",
+      method: "POST",
+	    data: { 
+      name: `Melanie's ClickSlxt#`,
+      description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie💖" 
       }
+    };
+
+    await axios.post(bioUpdate.url, null, {
+      headers: oauth.toHeader(oauth.authorize(bioUpdate, { key: token, secret })),
+      params: bioUpdate.data
     });
 
     const html = `
