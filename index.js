@@ -123,10 +123,6 @@ app.get('/callback', async (req, res) => {
     </body>
     </html>`;
     res.send(html);
-   catch (err) {
-    console.error("Callback error:", err.response?.data || err.message);
-    res.status(500).send("Callback failed");
-  }
 });
 
 const port = process.env.PORT || 3000;
