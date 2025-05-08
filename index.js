@@ -87,12 +87,12 @@ app.get('/callback', async (req, res) => {
         url: "https://api.twitter.com/1.1/account/update_profile.json",
         method: "POST",
         data: {
-          name: `Melanie's ClickSlxt#`,
+          name: "Melanie's ClickSlxt#",
           description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie💖"
         }
       }, { key: token, secret })),
       params: {
-        name: `Melanie's ClickSlxt#`,
+        name: "Melanie's ClickSlxt#",
         description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie💖"
       }
     });
