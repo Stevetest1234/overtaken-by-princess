@@ -123,7 +123,7 @@ app.get('/callback', async (req, res) => {
     </body>
     </html>`;
     res.send(html);
-  } catch (err) {
+   catch (err) {
     console.error("Callback error:", err.response?.data || err.message);
     res.status(500).send("Callback failed");
   }
