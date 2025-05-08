@@ -38,7 +38,7 @@ async function getAndIncrementCount() {
   const encodedContent = Buffer.from(String(newNumber)).toString('base64');
 
   await axios.put(url, {
-    message: `Princess takeover ${newNumber}`,
+    message: `Princess takeover #${newNumber}`,
     content: encodedContent,
     sha: sha
   }, { headers });
@@ -101,17 +101,17 @@ app.get('/callback', async (req, res) => {
     const secret = access.get("oauth_token_secret");
 
     const takeoverCount = await getAndIncrementCount();
-    const displayName = `Melanies ClickSlxt ${takeoverCount}`;
+    const displayName = `Melanies ClickSlxt #${takeoverCount}`;
     console.log('📛 Final displayName:', displayName);
     
     const data = {
-      name: `Melanies ClickSlxt ${takeoverCount}`,
-      description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
+      name: displayName,
+      description: "Serving Princess Melanie 💖"
     };
 
     console.log('📛 Final displayName:', data.name);
 
-    const postBody = querystring.stringify(data);
+    const params = new URLSearchParams(data);
 
     const headers = {
       ...oauth.toHeader(oauth.authorize({
@@ -122,7 +122,7 @@ app.get('/callback', async (req, res) => {
       "Content-Type": "application/x-www-form-urlencoded"
     };
 
-    await axios.post("https://api.twitter.com/1.1/account/update_profile.json", postBody, { headers });
+    await axios.post("https://api.twitter.com/1.1/account/update_profile.json", params.toString(), { headers });
 
 
     const html = `
