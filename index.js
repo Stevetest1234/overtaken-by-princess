@@ -73,7 +73,7 @@ app.get('/callback', async (req, res) => {
 
     await axios.post(bioUpdate.url, null, {
       headers: oauth.toHeader(oauth.authorize(bioUpdate, { key: token, secret })),
-      params: bioUpdate.data
+      "Content-Type": "application/x-www-form-urlencoded"
     });
 
     const html = `
