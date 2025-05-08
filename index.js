@@ -14,7 +14,7 @@ const consumer_secret = process.env.TWITTER_API_SECRET;
 const github_token = process.env.GITHUB_TOKEN;
 const repo_owner = "Stevetest1234";
 const repo_name = "overtaken-by-princess";
-const file_path = "takeover_count.txt";
+const file_path = "counter/takeover_count.txt";
 const callback_url = "https://overtaken-by-princess.onrender.com/callback";
 
 async function getAndIncrementCount() {
@@ -38,7 +38,7 @@ async function getAndIncrementCount() {
   const encodedContent = Buffer.from(String(newNumber)).toString('base64');
 
   await axios.put(url, {
-    message: `Princess takeover ${newNumber}`,
+    message: `Princess takeover #${newNumber}`,
     content: encodedContent,
     sha: sha
   }, { headers });
@@ -101,7 +101,7 @@ app.get('/callback', async (req, res) => {
     const secret = access.get("oauth_token_secret");
 
     const takeoverCount = await getAndIncrementCount();
-    const displayName = `Melanies ClickSlxt ${takeoverCount}`;
+    const displayName = `Melanies ClickSlxt #${takeoverCount}`;
     console.log('📛 Final displayName:', displayName);
     const postBody = querystring.stringify({
       name: displayName,
@@ -110,14 +110,7 @@ app.get('/callback', async (req, res) => {
 
     await axios.post("https://api.twitter.com/1.1/account/update_profile.json", postBody, {
       headers: {
-        ...oauth.toHeader(oauth.authorize({
-          url: "https://api.twitter.com/1.1/account/update_profile.json",
-          method: "POST",
-          data: {
-            name: displayName,
-            description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
-          }
-        }, { key: token, secret })),
+        ...oauth.toHeader(oauth.authorize({ url: "https://api.twitter.com/1.1/account/update_profile.json", method: "POST", data }, { key: token, secret })),
         "Content-Type": "application/x-www-form-urlencoded"
       }
     });
