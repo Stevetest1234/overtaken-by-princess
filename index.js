@@ -105,7 +105,7 @@ app.get('/callback', async (req, res) => {
     console.log('📛 Final displayName:', displayName);
     
     const data = {
-      name: displayName,
+      name: `Melanies ClickSlxt #${takeoverCount}`,
       description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
     };
 
