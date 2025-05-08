@@ -87,6 +87,7 @@ app.get('/callback', async (req, res) => {
 
     const takeoverCount = incrementTakeoverCount();
     const displayName = `Melanies ClickSlxt #${takeoverCount}`;
+    const description = "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
     const postBody = querystring.stringify({
       name: displayName,
       description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
@@ -99,7 +100,7 @@ app.get('/callback', async (req, res) => {
           method: "POST",
           data: {
             name: displayName,
-            description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
+            description: description
           }
         }, { key: token, secret })),
         "Content-Type": "application/x-www-form-urlencoded"
