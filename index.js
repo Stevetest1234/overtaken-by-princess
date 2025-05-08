@@ -20,7 +20,22 @@ const oauth = OAuth({
   }
 });
 
-await axios.put(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
+async function fetchAndIncrementCounter() {
+  const rawUrl = "https://raw.githubusercontent.com/Stevetest1234/overtaken-by-princess/main/counter.txt";
+  const githubToken = process.env.GITHUB_TOKEN;
+  const repo = "Stevetest1234/overtaken-by-princess";
+  const filePath = "counter.txt";
+
+  const { data: rawCounter } = await axios.get(rawUrl);
+  const current = parseInt(rawCounter.trim()) || 0;
+  const updated = current + 1;
+
+  const { data: fileMeta } = await axios.get(
+    `https://api.github.com/repos/${repo}/contents/${filePath}`,
+    { headers: { Authorization: `Bearer ${githubToken}`, Accept: "application/vnd.github.v3+json" } }
+  );
+
+  await axios.put(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
     message: `Auto-increment counter to ${updated}`,
     content: Buffer.from(String(updated)).toString("base64"),
     sha: fileMeta.sha
