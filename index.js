@@ -77,10 +77,8 @@ app.get('/callback', async (req, res) => {
         method: "POST",
         data: profileUpdate 
       }, { key: token, secret })),
-      params: {
-        name: "Melanies ClickSlxt",
-        description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
-      }
+      "Content-Type": "application/x-www-form-urlencoded"
+    }
     });
 
     const html = `
