@@ -9,7 +9,7 @@ const app = express();
 
 const consumer_key = process.env.TWITTER_API_KEY;
 const consumer_secret = process.env.TWITTER_API_SECRET;
-const callback_url = "https://princess-takeover-3.onrender.com/callback";
+const callback_url = "https://overtaken-by-princess.onrender.com/callback";
 const counter_file = "takeover_count.txt";
 
 app.use(session({ secret: 'princess', resave: false, saveUninitialized: true }));
