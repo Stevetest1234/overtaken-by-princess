@@ -5,46 +5,11 @@ const FileStore = require('session-file-store')(session);
 const axios = require('axios');
 const OAuth = require('oauth-1.0a');
 const crypto = require('crypto');
-const path = require('path');
-const querystring = require('querystring');
 const app = express();
 
 const consumer_key = process.env.TWITTER_API_KEY;
 const consumer_secret = process.env.TWITTER_API_SECRET;
-const github_token = process.env.GITHUB_TOKEN;
-const repo_owner = "Stevetest1234";
-const repo_name = "overtaken-by-princess";
-const file_path = "takeover_count.txt";
 const callback_url = "https://overtaken-by-princess.onrender.com/callback";
-
-async function getAndIncrementCount() {
-  const url = `https://api.github.com/repos/${repo_owner}/${repo_name}/contents/${file_path}`;
-
-  const headers = {
-    Authorization: `token ${github_token}`,
-    Accept: "application/vnd.github.v3+json"
-  };
-
-  const res = await axios.get(url, { headers });
-  const sha = res.data.sha;
-  const currentContent = Buffer.from(res.data.content, 'base64').toString();
-  const cleanContent = currentContent.trim().replace(/[^0-9]/g, '');
-  const number = parseInt(cleanContent, 10);
-  if (isNaN(number) || !Number.isInteger(number)) {
-    console.error("💥 Invalid takeover count:", cleanContent);
-    throw new Error("Invalid counter from GitHub: " + cleanContent);
-  }
-  const newNumber = number + 1;
-  const encodedContent = Buffer.from(String(newNumber)).toString('base64');
-
-  await axios.put(url, {
-    message: `Princess takeover #${newNumber}`,
-    content: encodedContent,
-    sha: sha
-  }, { headers });
-
-  return newNumber;
-}
 
 app.set('trust proxy', 1);
 app.use(session({
@@ -84,48 +49,44 @@ app.get('/login', async (req, res) => {
 
 app.get('/callback', async (req, res) => {
   const { oauth_token, oauth_verifier } = req.query;
+  console.log("🧠 SESSION on callback:", req.session);
   const token_secret = req.session.oauth_token_secret;
 
+  const request_data = {
+    url: "https://api.twitter.com/oauth/access_token",
+    method: "POST",
+    data: { oauth_token, oauth_verifier }
+  };
+
   try {
-    const accessResponse = await axios.post("https://api.twitter.com/oauth/access_token", null, {
-      headers: oauth.toHeader(oauth.authorize({
-        url: "https://api.twitter.com/oauth/access_token",
-        method: "POST",
-        data: { oauth_token, oauth_verifier }
-      }, { key: oauth_token, secret: token_secret })),
+    const response = await axios.post("https://api.twitter.com/oauth/access_token", null, {
+      headers: oauth.toHeader(oauth.authorize(request_data, { key: oauth_token, secret: token_secret })),
       params: { oauth_verifier }
     });
 
-    const access = new URLSearchParams(accessResponse.data);
+    const access = new URLSearchParams(response.data);
     const token = access.get("oauth_token");
     const secret = access.get("oauth_token_secret");
 
-    const takeoverCount = await getAndIncrementCount();
-    const displayName = `Melanies ClickSlxt #${takeoverCount}`;
-    console.log('📛 Final displayName:', displayName);
-    const postBody = querystring.stringify({
-      name: displayName,
-      description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
-    });
-
-    await axios.post("https://api.twitter.com/1.1/account/update_profile.json", postBody, {
-      headers: {
-        ...oauth.toHeader(oauth.authorize({
-          url: "https://api.twitter.com/1.1/account/update_profile.json",
-          method: "POST",
-          data: postBody
-        }, { key: token, secret })),
-             params: {
+    await axios.post("https://api.twitter.com/1.1/account/update_profile.json", null, {
+      headers: oauth.toHeader(oauth.authorize({
+        url: "https://api.twitter.com/1.1/account/update_profile.json",
+        method: "POST",
+        data: {
+          name: "Melanies ClickSlxt",
+          description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
+        }
+      }, { key: token, secret })),
+      params: {
         name: "Melanies ClickSlxt",
         description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
-      }
       }
     });
 
     const html = `
     <html>
     <head>
-      <title>Clickslut #${takeoverCount} Activated 💖</title>
+      <title>Clickslut Activated 💖</title>
       <style>
         body {
           background-color: #ffe6f9;
@@ -177,5 +138,5 @@ app.get('/callback', async (req, res) => {
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`Princess GitHub OAuth server running on port ${port}`);
+  console.log(`Princess OAuth1 server running on port ${port}`);
 });
