@@ -6,13 +6,19 @@ const OAuth = require('oauth-1.0a');
 const crypto = require('crypto');
 const fs = require('fs');
 const app = express();
+app.set('trust proxy', 1);
 
 const consumer_key = process.env.TWITTER_API_KEY;
 const consumer_secret = process.env.TWITTER_API_SECRET;
 const callback_url = "https://overtaken-by-princess.onrender.com/callback";
 const counter_file = "takeover_count.txt";
 
-app.use(session({ secret: 'princess', resave: false, saveUninitialized: true }));
+app.use(session({
+  secret: 'princess',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false, maxAge: 600000 }
+}));
 
 const oauth = OAuth({
   consumer: { key: consumer_key, secret: consumer_secret },
@@ -57,6 +63,8 @@ app.get('/login', async (req, res) => {
 
 app.get('/callback', async (req, res) => {
   const { oauth_token, oauth_verifier } = req.query;
+console.log("🔁 Callback received with token:", oauth_token, "verifier:", oauth_verifier);
+console.log("🔐 Stored token secret:", req.session.oauth_token_secret);
   const token_secret = req.session.oauth_token_secret;
   const url = "https://api.twitter.com/oauth/access_token";
   const request_data = {
@@ -83,12 +91,12 @@ app.get('/callback', async (req, res) => {
         method: "POST",
         data: {
           name: `Melanie's ClickSlxt#${takeoverCount}`,
-          description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie💖"
+          description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
         }
       }, { key: token, secret })),
       params: {
         name: `Melanie's ClickSlxt#${takeoverCount}`,
-        description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie💖"
+        description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
       }
     });
 
