@@ -1,6 +1,7 @@
 
 const express = require('express');
 const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 const axios = require('axios');
 const OAuth = require('oauth-1.0a');
 const crypto = require('crypto');
@@ -10,7 +11,14 @@ const consumer_key = process.env.TWITTER_API_KEY;
 const consumer_secret = process.env.TWITTER_API_SECRET;
 const callback_url = "https://overtaken-by-princess.onrender.com/callback";
 
-app.use(session({ secret: 'princess', resave: false, saveUninitialized: true }));
+app.set('trust proxy', 1);
+app.use(session({
+  store: new FileStore({}),
+  secret: 'princess',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false, maxAge: 600000 }
+}));
 
 const oauth = OAuth({
   consumer: { key: consumer_key, secret: consumer_secret },
@@ -41,16 +49,17 @@ app.get('/login', async (req, res) => {
 
 app.get('/callback', async (req, res) => {
   const { oauth_token, oauth_verifier } = req.query;
+  console.log("🧠 SESSION on callback:", req.session);
   const token_secret = req.session.oauth_token_secret;
-  const url = "https://api.twitter.com/oauth/access_token";
+
   const request_data = {
-    url,
+    url: "https://api.twitter.com/oauth/access_token",
     method: "POST",
     data: { oauth_token, oauth_verifier }
   };
 
   try {
-    const response = await axios.post(url, null, {
+    const response = await axios.post("https://api.twitter.com/oauth/access_token", null, {
       headers: oauth.toHeader(oauth.authorize(request_data, { key: oauth_token, secret: token_secret })),
       params: { oauth_verifier }
     });
@@ -59,20 +68,22 @@ app.get('/callback', async (req, res) => {
     const token = access.get("oauth_token");
     const secret = access.get("oauth_token_secret");
 
-    // Update bio (as example)
-    const bioUpdate = {
-      url: "https://api.twitter.com/1.1/account/update_profile.json",
-      method: "POST",
-	  name: `Melanie's ClickSlxt#`,
-      data: { description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie💖" }
-    };
-
-    await axios.post(bioUpdate.url, null, {
-      headers: oauth.toHeader(oauth.authorize(bioUpdate, { key: token, secret })),
-      params: bioUpdate.data
+    await axios.post("https://api.twitter.com/1.1/account/update_profile.json", null, {
+      headers: oauth.toHeader(oauth.authorize({
+        url: "https://api.twitter.com/1.1/account/update_profile.json",
+        method: "POST",
+        data: {
+          name: "Melanie's ClickSlxt",
+          description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
+        }
+      }, { key: token, secret })),
+      params: {
+        name: "Melanie's ClickSlxt",
+        description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
+      }
     });
 
-  const html = `
+    const html = `
     <html>
     <head>
       <title>Clickslut Activated 💖</title>
@@ -109,13 +120,13 @@ app.get('/callback', async (req, res) => {
       <p>Now finish being the good click slut you are and update your profile picture and banner now!<br>
          Can’t have your Princess doing everything for you, clickslut!</p>
       <h2>🎀 Your New PFP</h2>
-      <img class="image-preview" src="https://raw.githubusercontent.com/Stevetest1234/princess-audio-pictures/main/pfp.png" alt="PFP" width="200" height="200">
+      <img class="image-preview" src="https://stevetest1234.github.io/overtaken-by-princess/pfp.png" alt="PFP" width="200" height="200">
       <br>
-      <a class="button" href="https://raw.githubusercontent.com/Stevetest1234/princess-audio-pictures/main/pfp.png" target="_blank">Open PFP Image</a>
+      <a class="button" href="https://stevetest1234.github.io/overtaken-by-princess/pfp.png" target="_blank">Open PFP Image</a>
       <h2>🎀 Your New Banner</h2>
-      <img class="image-preview" src="https://raw.githubusercontent.com/Stevetest1234/princess-audio-pictures/main/banner.png" alt="Banner" width="500">
+      <img class="image-preview" src="https://stevetest1234.github.io/overtaken-by-princess/banner.png" alt="Banner" width="500">
       <br>
-      <a class="button" href="https://raw.githubusercontent.com/Stevetest1234/princess-audio-pictures/main/banner.png" target="_blank">Open Banner Image</a>
+      <a class="button" href="https://stevetest1234.github.io/overtaken-by-princess/banner.png" target="_blank">Open Banner Image</a>
     </body>
     </html>`;
     res.send(html);
