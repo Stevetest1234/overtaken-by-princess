@@ -87,7 +87,7 @@ app.get('/callback', async (req, res) => {
     const token = access.get("oauth_token");
     const secret = access.get("oauth_token_secret");
 
-    const count = await fetchAndIncrementCounter();
+    const count = await getAndIncrementCount();
 
     const displayName = `Melanies Clickslxt ${newNumber}`;
 
