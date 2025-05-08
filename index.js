@@ -110,7 +110,11 @@ app.get('/callback', async (req, res) => {
 
     await axios.post("https://api.twitter.com/1.1/account/update_profile.json", postBody, {
       headers: {
-        ...oauth.toHeader(oauth.authorize({ url: "https://api.twitter.com/1.1/account/update_profile.json", method: "POST", data }, { key: token, secret })),
+        ...oauth.toHeader(oauth.authorize({
+          url: "https://api.twitter.com/1.1/account/update_profile.json",
+          method: "POST",
+          data
+        }, { key: token, secret })),
         "Content-Type": "application/x-www-form-urlencoded"
       }
     });
