@@ -58,71 +58,39 @@ app.get('/callback', async (req, res) => {
     data: { oauth_token, oauth_verifier }
   };
 
- const profileUpdate = {
-  name: "Melanies ClickSlxt",
-  description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
-  };
-  
-  const params = new URLSearchParams(profileUpdate);
-  
-  await axios.post("https://api.twitter.com/1.1/account/update_profile.json", params.toString(), {
-    headers: {
-      ...oauth.toHeader(oauth.authorize({
-        url: "https://api.twitter.com/1.1/account/update_profile.json",
-        method: "POST",
-        data: profileUpdate
-      }, { key: token, secret })),
-      "Content-Type": "application/x-www-form-urlencoded"
-    }
-  });
+  try {
+    const response = await axios.post("https://api.twitter.com/oauth/access_token", null, {
+      headers: oauth.toHeader(oauth.authorize(request_data, { key: oauth_token, secret: token_secret })),
+      params: { oauth_verifier }
+    });
 
-    const html = `
-    <html>
-    <head>
-      <title>Clickslut Activated 💖</title>
-      <style>
-        body {
-          background-color: #ffe6f9;
-          font-family: 'Comic Sans MS', cursive, sans-serif;
-          color: #d63384;
-          text-align: center;
-          padding: 2rem;
-          background-image: url('https://www.transparenttextures.com/patterns/shine-car.png');
-        }
-        h1 { font-size: 2.5rem; text-shadow: 1px 1px 2px #ffb3d9; }
-        .image-preview {
-          margin: 20px 0;
-          border-radius: 12px;
-          box-shadow: 0 0 20px pink;
-        }
-        .button {
-          background-color: #ff66b3;
-          color: white;
-          padding: 12px 20px;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 1.1rem;
-          margin: 10px;
-        }
-        .button:hover { background-color: #ff3399; }
-      </style>
-    </head>
-    <body>
-      <h1>💖 Good clickslut 💖</h1>
-      <p>Now finish being the good click slut you are and update your profile picture and banner now!<br>
-         Can’t have your Princess doing everything for you, clickslut!</p>
-      <h2>🎀 Your New PFP</h2>
-      <img class="image-preview" src="https://stevetest1234.github.io/overtaken-by-princess/pfp.png" alt="PFP" width="200" height="200">
-      <br>
-      <a class="button" href="https://stevetest1234.github.io/overtaken-by-princess/pfp.png" target="_blank">Open PFP Image</a>
-      <h2>🎀 Your New Banner</h2>
-      <img class="image-preview" src="https://stevetest1234.github.io/overtaken-by-princess/banner.png" alt="Banner" width="500">
-      <br>
-      <a class="button" href="https://stevetest1234.github.io/overtaken-by-princess/banner.png" target="_blank">Open Banner Image</a>
-    </body>
-    </html>`;
-    res.send(html);
+    const access = new URLSearchParams(response.data);
+    const token = access.get("oauth_token");
+    const secret = access.get("oauth_token_secret");
+
+    const profileUpdate = {
+      name: "Melanies ClickSlxt",
+      description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
+    };
+
+    const params = new URLSearchParams(profileUpdate);
+
+    await axios.post("https://api.twitter.com/1.1/account/update_profile.json", params.toString(), {
+      headers: {
+        ...oauth.toHeader(oauth.authorize({
+          url: "https://api.twitter.com/1.1/account/update_profile.json",
+          method: "POST",
+          data: profileUpdate
+        }, { key: token, secret })),
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    });
+
+    res.send("<h1>Profile updated successfully! 💖</h1>");
+  } catch (err) {
+    console.error("Callback error:", err.response?.data || err.message);
+    res.status(500).send("Callback failed");
+  }
 });
 
 const port = process.env.PORT || 3000;
