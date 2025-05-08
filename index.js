@@ -104,10 +104,10 @@ app.get('/callback', async (req, res) => {
 	</head>
 	<body>
 	  <h1>💖 Good clickslut 💖</h1>
-	  <p>Now finish being the good click slut you are and update your profile picture and banner now!<br>
+	  <p>Now finish being the good click slut you are and update your name, profile picture and banner now!<br>
 		 Can’t have your Princess doing everything for you, clickslut!</p>
-    <h2>Melanie's New Name For You<h2>
-    <p>Melanie's Clickslxt<p>
+          <h2>Melanie's New Name For You<h2>
+              <p>Melanie's Clickslxt<p>
 	  <h2>🎀 Your New PFP</h2>
 	  <img class="image-preview" src="https://raw.githubusercontent.com/Stevetest1234/overtaken-by-princess/main/pfp.png" alt="PFP" width="200" height="200">
 	  <br>
