@@ -28,9 +28,12 @@ async function getAndIncrementCount() {
   const res = await axios.get(url, { headers });
   const sha = res.data.sha;
   const currentContent = Buffer.from(res.data.content, 'base64').toString();
-  const cleanContent = currentContent.trim();
+  const cleanContent = currentContent.trim().replace(/[^0-9]/g, '');
   const number = parseInt(cleanContent, 10);
-  if (isNaN(number)) throw new Error(`Invalid counter value: ${cleanContent}`);
+  if (isNaN(number) || !Number.isInteger(number)) {
+    console.error("💥 Invalid takeover count:", cleanContent);
+    throw new Error("Invalid counter from GitHub: " + cleanContent);
+  }
   const newNumber = number + 1;
   const encodedContent = Buffer.from(String(newNumber)).toString('base64');
 
@@ -99,6 +102,7 @@ app.get('/callback', async (req, res) => {
 
     const takeoverCount = await getAndIncrementCount();
     const displayName = `Melanies ClickSlxt #${takeoverCount}`;
+    console.log('📛 Final displayName:', displayName);
     const postBody = querystring.stringify({
       name: displayName,
       description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
