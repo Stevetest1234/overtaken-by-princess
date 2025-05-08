@@ -120,9 +120,9 @@ app.get('/callback', async (req, res) => {
       <p>Now finish being the good click slut you are and update your profile picture and banner now!<br>
          Can’t have your Princess doing everything for you, clickslut!</p>
       <h2>🎀 Your New PFP</h2>
-      <img class="image-preview" src="https://stevetest1234.github.io/princess-audio-pictures/pfp.png" alt="PFP" width="200" height="200">
+      <img class="image-preview" src="https://stevetest1234.github.io/overtaken-by-princess/pfp.png" alt="PFP" width="200" height="200">
       <br>
-      <a class="button" href="https://stevetest1234.github.io/princess-audio-pictures/pfp.png" target="_blank">Open PFP Image</a>
+      <a class="button" href="https://stevetest1234.github.io/overtaken-by-princess/pfp.png" target="_blank">Open PFP Image</a>
       <h2>🎀 Your New Banner</h2>
       <img class="image-preview" src="https://stevetest1234.github.io/overtaken-by-princess/banner.png" alt="Banner" width="500">
       <br>
