@@ -113,7 +113,7 @@ app.get('/callback', async (req, res) => {
         ...oauth.toHeader(oauth.authorize({
           url: "https://api.twitter.com/1.1/account/update_profile.json",
           method: "POST",
-          data
+          data: postBody
         }, { key: token, secret })),
         "Content-Type": "application/x-www-form-urlencoded"
       }
