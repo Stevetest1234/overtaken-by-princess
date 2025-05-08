@@ -4,21 +4,13 @@ const session = require('express-session');
 const axios = require('axios');
 const OAuth = require('oauth-1.0a');
 const crypto = require('crypto');
-const fs = require('fs');
 const app = express();
 
 const consumer_key = process.env.TWITTER_API_KEY;
 const consumer_secret = process.env.TWITTER_API_SECRET;
 const callback_url = "https://overtaken-by-princess.onrender.com/callback";
-const counter_file = "takeover_count.txt";
 
-app.set('trust proxy', 1);
-app.use(session({
-  secret: 'princess',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { secure: false, maxAge: 600000 }
-}));
+app.use(session({ secret: 'princess', resave: false, saveUninitialized: true }));
 
 const oauth = OAuth({
   consumer: { key: consumer_key, secret: consumer_secret },
@@ -32,20 +24,6 @@ function requestToken() {
   const url = "https://api.twitter.com/oauth/request_token";
   const request_data = { url, method: "POST", data: { oauth_callback: callback_url } };
   return axios.post(url, null, { headers: oauth.toHeader(oauth.authorize(request_data)) });
-}
-
-function readCounter() {
-  try {
-    if (!fs.existsSync(counter_file)) fs.writeFileSync(counter_file, "1");
-    const count = parseInt(fs.readFileSync(counter_file, "utf-8").trim());
-    return isNaN(count) ? 1 : count;
-  } catch {
-    return 1;
-  }
-}
-
-function incrementCounter(count) {
-  fs.writeFileSync(counter_file, (count + 1).toString());
 }
 
 app.get('/login', async (req, res) => {
@@ -64,15 +42,15 @@ app.get('/login', async (req, res) => {
 app.get('/callback', async (req, res) => {
   const { oauth_token, oauth_verifier } = req.query;
   const token_secret = req.session.oauth_token_secret;
-
+  const url = "https://api.twitter.com/oauth/access_token";
   const request_data = {
-    url: "https://api.twitter.com/oauth/access_token",
+    url,
     method: "POST",
     data: { oauth_token, oauth_verifier }
   };
 
   try {
-    const response = await axios.post("https://api.twitter.com/oauth/access_token", null, {
+    const response = await axios.post(url, null, {
       headers: oauth.toHeader(oauth.authorize(request_data, { key: oauth_token, secret: token_secret })),
       params: { oauth_verifier }
     });
@@ -80,26 +58,21 @@ app.get('/callback', async (req, res) => {
     const access = new URLSearchParams(response.data);
     const token = access.get("oauth_token");
     const secret = access.get("oauth_token_secret");
-    const takeoverCount = readCounter();
 
-    await axios.post("https://api.twitter.com/1.1/account/update_profile.json", null, {
-      headers: oauth.toHeader(oauth.authorize({
-        url: "https://api.twitter.com/1.1/account/update_profile.json",
-        method: "POST",
-        data: {
-          name: "Melanie's ClickSlxt#",
-          description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie💖"
-        }
-      }, { key: token, secret })),
-      params: {
-        name: "Melanie's ClickSlxt#",
-        description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie💖"
-      }
+    // Update bio (as example)
+    const bioUpdate = {
+      url: "https://api.twitter.com/1.1/account/update_profile.json",
+      method: "POST",
+	  name: `Melanie's ClickSlxt#`,
+      data: { description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie💖" }
+    };
+
+    await axios.post(bioUpdate.url, null, {
+      headers: oauth.toHeader(oauth.authorize(bioUpdate, { key: token, secret })),
+      params: bioUpdate.data
     });
 
-    incrementCounter(takeoverCount);
-
-    const html = `
+  const html = `
     <html>
     <head>
       <title>Clickslut Activated 💖</title>
