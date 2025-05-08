@@ -106,7 +106,7 @@ app.get('/callback', async (req, res) => {
     
     const data = {
       name: displayName,
-      description: "Serving Princess Melanie 💖"
+      description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
     };
 
     console.log('📛 Final displayName:', data.name);
