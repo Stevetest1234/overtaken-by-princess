@@ -14,7 +14,7 @@ const consumer_secret = process.env.TWITTER_API_SECRET;
 const github_token = process.env.GITHUB_TOKEN;
 const repo_owner = "Stevetest1234";
 const repo_name = "overtaken-by-princess";
-const file_path = "takeover_count.txt";
+const file_path = "counter/takeover_count.txt";
 const callback_url = "https://overtaken-by-princess.onrender.com/callback";
 
 async function getAndIncrementCount() {
@@ -28,7 +28,9 @@ async function getAndIncrementCount() {
   const res = await axios.get(url, { headers });
   const sha = res.data.sha;
   const currentContent = Buffer.from(res.data.content, 'base64').toString();
-  const number = parseInt(currentContent.trim(), 10) || 1;
+  const cleanContent = currentContent.trim();
+  const number = parseInt(cleanContent, 10);
+  if (isNaN(number)) throw new Error(`Invalid counter value: ${cleanContent}`);
   const newNumber = number + 1;
   const encodedContent = Buffer.from(String(newNumber)).toString('base64');
 
