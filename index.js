@@ -71,9 +71,14 @@ app.get('/callback', async (req, res) => {
       }
     };
 
-    await axios.post(bioUpdate.url, null, {
-      headers: oauth.toHeader(oauth.authorize(bioUpdate, { key: token, secret })),
-      "Content-Type": "application/x-www-form-urlencoded"
+
+    const body = new URLSearchParams(bioUpdate.data);
+
+    await axios.post(bioUpdate.url, body.toString(), {
+      headers: {
+        ...oauth.toHeader(oauth.authorize(bioUpdate, { key: token, secret })),
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
     });
 
     const html = `
