@@ -83,12 +83,12 @@ app.get('/callback', async (req, res) => {
         method: "POST",
         data: {
           name: `Melanie's ClickSlxt#${takeoverCount}`,
-          description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 🩷😵‍💫 ||"
+          description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie❤"
         }
       }, { key: token, secret })),
       params: {
         name: `Melanie's ClickSlxt#${takeoverCount}`,
-        description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 🩷😵‍💫 ||"
+        description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie❤"
       }
     });
 
