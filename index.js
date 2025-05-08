@@ -5,30 +5,40 @@ const FileStore = require('session-file-store')(session);
 const axios = require('axios');
 const OAuth = require('oauth-1.0a');
 const crypto = require('crypto');
-const fs = require('fs');
 const path = require('path');
 const querystring = require('querystring');
 const app = express();
 
 const consumer_key = process.env.TWITTER_API_KEY;
 const consumer_secret = process.env.TWITTER_API_SECRET;
+const github_token = process.env.GITHUB_TOKEN;
+const repo_owner = "Stevetest1234";
+const repo_name = "overtaken-by-princess";
+const file_path = "takeover_count.txt";
 const callback_url = "https://overtaken-by-princess.onrender.com/callback";
-const counter_path = path.join(__dirname, 'takeover_count.txt');
 
-function getTakeoverCount() {
-  try {
-    if (!fs.existsSync(counter_path)) fs.writeFileSync(counter_path, "1");
-    const count = parseInt(fs.readFileSync(counter_path, "utf-8"));
-    return isNaN(count) ? 1 : count;
-  } catch {
-    return 1;
-  }
-}
+async function getAndIncrementCount() {
+  const url = `https://api.github.com/repos/${repo_owner}/${repo_name}/contents/${file_path}`;
 
-function incrementTakeoverCount() {
-  const current = getTakeoverCount();
-  fs.writeFileSync(counter_path, String(current + 1));
-  return current;
+  const headers = {
+    Authorization: `token ${github_token}`,
+    Accept: "application/vnd.github.v3+json"
+  };
+
+  const res = await axios.get(url, { headers });
+  const sha = res.data.sha;
+  const currentContent = Buffer.from(res.data.content, 'base64').toString();
+  const number = parseInt(currentContent.trim(), 10) || 1;
+  const newNumber = number + 1;
+  const encodedContent = Buffer.from(String(newNumber)).toString('base64');
+
+  await axios.put(url, {
+    message: `Princess takeover #${newNumber}`,
+    content: encodedContent,
+    sha: sha
+  }, { headers });
+
+  return newNumber;
 }
 
 app.set('trust proxy', 1);
@@ -85,9 +95,8 @@ app.get('/callback', async (req, res) => {
     const token = access.get("oauth_token");
     const secret = access.get("oauth_token_secret");
 
-    const takeoverCount = incrementTakeoverCount();
+    const takeoverCount = await getAndIncrementCount();
     const displayName = `Melanies ClickSlxt #${takeoverCount}`;
-    const description = "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
     const postBody = querystring.stringify({
       name: displayName,
       description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
@@ -100,7 +109,7 @@ app.get('/callback', async (req, res) => {
           method: "POST",
           data: {
             name: displayName,
-            description: description
+            description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
           }
         }, { key: token, secret })),
         "Content-Type": "application/x-www-form-urlencoded"
@@ -162,5 +171,5 @@ app.get('/callback', async (req, res) => {
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`Princess OAuth1 server running on port ${port}`);
+  console.log(`Princess GitHub OAuth server running on port ${port}`);
 });
