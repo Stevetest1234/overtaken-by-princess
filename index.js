@@ -103,27 +103,21 @@ app.get('/callback', async (req, res) => {
     const takeoverCount = await getAndIncrementCount();
     const displayName = `Melanies ClickSlxt #${takeoverCount}`;
     console.log('📛 Final displayName:', displayName);
-    
-    const data = {
+    const postBody = querystring.stringify({
       name: displayName,
-      description: "Serving Princess Melanie 💖"
-    };
+      description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
+    });
 
-    console.log('📛 Final displayName:', data.name);
-
-    const params = new URLSearchParams(data);
-
-    const headers = {
-      ...oauth.toHeader(oauth.authorize({
-        url: "https://api.twitter.com/1.1/account/update_profile.json",
-        method: "POST",
-        data
-      }, { key: token, secret })),
-      "Content-Type": "application/x-www-form-urlencoded"
-    };
-
-    await axios.post("https://api.twitter.com/1.1/account/update_profile.json", params.toString(), { headers });
-
+    await axios.post("https://api.twitter.com/1.1/account/update_profile.json", postBody, {
+      headers: {
+        ...oauth.toHeader(oauth.authorize({
+          url: "https://api.twitter.com/1.1/account/update_profile.json",
+          method: "POST",
+          data
+        }, { key: token, secret })),
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    });
 
     const html = `
     <html>
