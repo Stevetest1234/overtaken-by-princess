@@ -67,15 +67,15 @@ app.get('/callback', async (req, res) => {
     const access = new URLSearchParams(response.data);
     const token = access.get("oauth_token");
     const secret = access.get("oauth_token_secret");
-
+    const profileUpdate = {
+        name: "Melanies ClickSlxt",
+        description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
+      };
     await axios.post("https://api.twitter.com/1.1/account/update_profile.json", null, {
       headers: oauth.toHeader(oauth.authorize({
         url: "https://api.twitter.com/1.1/account/update_profile.json",
         method: "POST",
-        data: {
-          name: "Melanies ClickSlxt",
-          description: "Sick patient to @melanierose2dfd 😵‍💫😵‍💫 || Addicted to dopamine and making terrible financial decisions 😷🥴💉 || Currently in deep debt to Princess Melanie 💖"
-        }
+        data: profileUpdate 
       }, { key: token, secret })),
       params: {
         name: "Melanies ClickSlxt",
