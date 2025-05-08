@@ -21,7 +21,7 @@ const oauth = OAuth({
 });
 
 async function fetchAndIncrementCounter() {
-  const rawUrl = "https://raw.githubusercontent.com/Stevetest1234/overtaken-by-princess/main/counter.txt";
+  const rawUrl = "https://github.com/Stevetest1234/overtaken-by-princess/blob/main/takeover_count.txt";
   const githubToken = process.env.GITHUB_TOKEN;
   const repo = "Stevetest1234/overtaken-by-princess";
   const filePath = "counter.txt";
