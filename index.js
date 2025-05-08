@@ -101,7 +101,7 @@ app.get('/callback', async (req, res) => {
     const secret = access.get("oauth_token_secret");
 
     const takeoverCount = await getAndIncrementCount();
-    const displayName = `Melanies ClickSlxt #${takeoverCount}`;
+    const displayName = `Melanies ClickSlxt ${takeoverCount}`;
     console.log('📛 Final displayName:', displayName);
     const postBody = querystring.stringify({
       name: displayName,
