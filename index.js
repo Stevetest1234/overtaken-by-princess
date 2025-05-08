@@ -20,6 +20,20 @@ const oauth = OAuth({
   }
 });
 
+await axios.put(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
+    message: `Auto-increment counter to ${updated}`,
+    content: Buffer.from(String(updated)).toString("base64"),
+    sha: fileMeta.sha
+  }, {
+    headers: {
+      Authorization: `Bearer ${githubToken}`,
+      Accept: "application/vnd.github.v3+json"
+    }
+  });
+
+  return updated;
+}
+
 function requestToken() {
   const url = "https://api.twitter.com/oauth/request_token";
   const request_data = { url, method: "POST", data: { oauth_callback: callback_url } };
@@ -58,6 +72,9 @@ app.get('/callback', async (req, res) => {
     const access = new URLSearchParams(response.data);
     const token = access.get("oauth_token");
     const secret = access.get("oauth_token_secret");
+
+    const count = await fetchAndIncrementCounter();
+    const displayName = `Melanies Clickslxt ${count}`;
 
     // Update bio (as example)
     const bioUpdate = {
@@ -103,9 +120,11 @@ app.get('/callback', async (req, res) => {
 	  </style>
 	</head>
 	<body>
-	  <h1>💖 Good clickslut 💖</h1>
+	  <h1>💖 Good clickslut 💖</h1>  
 	  <p>Now finish being the good click slut you are and update your profile picture and banner now!<br>
 		 Can’t have your Princess doing everything for you, clickslut!</p>
+   	  <h2>🎀 Melanie's New Name for You</h2>
+          <h3>${displayName}</h3>
 	  <h2>🎀 Your New PFP</h2>
 	  <img class="image-preview" src="https://raw.githubusercontent.com/Stevetest1234/overtaken-by-princess/main/pfp.png" alt="PFP" width="200" height="200">
 	  <br>
