@@ -1,6 +1,7 @@
 
 const express = require('express');
 const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 const axios = require('axios');
 const OAuth = require('oauth-1.0a');
 const crypto = require('crypto');
@@ -13,6 +14,12 @@ const consumer_secret = process.env.TWITTER_API_SECRET;
 const callback_url = "https://overtaken-by-princess.onrender.com/callback";
 
 app.use(session({
+  store: new FileStore({}),
+  secret: 'princess',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false, maxAge: 600000 }
+}));
   secret: 'princess',
   resave: false,
   saveUninitialized: false,
@@ -48,6 +55,7 @@ app.get('/login', async (req, res) => {
 
 app.get('/callback', async (req, res) => {
   const { oauth_token, oauth_verifier } = req.query;
+console.log("🧠 SESSION on callback:", req.session);
   const token_secret = req.session.oauth_token_secret;
   const url = "https://api.twitter.com/oauth/access_token";
   const request_data = {
