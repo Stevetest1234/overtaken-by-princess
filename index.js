@@ -38,7 +38,7 @@ async function getAndIncrementCount() {
   const encodedContent = Buffer.from(String(newNumber)).toString('base64');
 
   await axios.put(url, {
-    message: `Princess takeover #${newNumber}`,
+    message: `Princess takeover ${newNumber}`,
     content: encodedContent,
     sha: sha
   }, { headers });
@@ -101,7 +101,7 @@ app.get('/callback', async (req, res) => {
     const secret = access.get("oauth_token_secret");
 
     const takeoverCount = await getAndIncrementCount();
-    const displayName = `Melanies ClickSlxt #${takeoverCount}`;
+    const displayName = `Melanies ClickSlxt ${takeoverCount}`;
     console.log('📛 Final displayName:', displayName);
     
     const data = {
