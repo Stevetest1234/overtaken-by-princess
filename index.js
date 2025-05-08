@@ -151,3 +151,8 @@ app.get('/callback', async (req, res) => {
     res.status(500).send("Callback failed");
   }
 });
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Princess OAuth1 server running on port ${port}`);
+});
